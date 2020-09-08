@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet" />
+  <title>Chat</title>
+</head>
+
+<body>
+  <div class="container mt-5 col-6">
+    <div id="message-box" class="overflow-auto" style="height:300px;">
+    </div>
+    <form class="md-form form-lg" method="POST" onsubmit="send(event)" action=".">{% csrf_token %}
+      <input type="text" id="sender_text" placeholder="Press Enter to send." name="sender_text" class="form-control form-control-lg" />
+    </form>
+  </div>
+  <script src="{% static 'js/main.js' %}"></script>
+</body>
+
+</html>
