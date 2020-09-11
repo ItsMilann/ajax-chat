@@ -34,6 +34,7 @@ function chatMessage(message, float, color, avatarLink) {
 }
 // AJAX -- GET Messsages
 function refreshMessages() {
+  var message_box = document.getElementById("message-box")
   const xhr = new XMLHttpRequest()
   xhr.open("POST", "/message_lists/")
   xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest")
@@ -57,7 +58,6 @@ function refreshMessages() {
         var admin_text = ''
       }
       if (messageList[i].client_message !== null) {
-        console.log(messageList[i])
         var client_text = chatMessage(
           messageList[i].client_message,
           "float-right",
@@ -76,6 +76,7 @@ function refreshMessages() {
   scrolldown()
 }
 // JS
+var message_box = document.getElementById("message-box")
 var message_field = document.getElementById("client_message")
 if (message_field === null) {
   var message_field = document.getElementById("admin_message")
