@@ -14,10 +14,17 @@
   <div class="container mt-5 col-md-6">
     <div id="message-box" class="overflow-auto" style="height:300px;">
     </div>
+    {% if request.user.username == 'admin' %}
     <form class="md-form form-lg" method="POST" onsubmit="send(event)" action=".">{% csrf_token %}
-      <input type="text" id="sender_text" placeholder="Press Enter to send." name="sender_text"
+      <input type="text" id="admin_message" placeholder="Press Enter to send." name="admin_message"
         class="form-control form-control-lg" />
     </form>
+    {% else %}
+    <form class="md-form form-lg" method="POST" onsubmit="send(event)" action=".">{% csrf_token %}
+      <input type="text" id="client_message" placeholder="Press Enter to send." name="client_message"
+        class="form-control form-control-lg" />
+    </form>
+    {% endif %}
   </div>
   <script src="{% static 'js/main.js' %}"></script>
 </body>

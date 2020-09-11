@@ -1,3 +1,18 @@
+//getting cookie
+function getCookie(name) {
+  var cookieValue = null
+  if (document.cookie && document.cookie != "") {
+    var cookies = document.cookie.split(";")
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i].trim()
+      if (cookie.substring(0, name.length + 1) == name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+        break
+      }
+    }
+  }
+  return cookieValue
+}
 //Scroll
 function scrolldown() {
   message_box.scrollTop = message_box.scrollHeight
@@ -10,17 +25,20 @@ const userAvatar =
 
 function chatMessage(message, float, color, avatarLink) {
   var text = `<p ${float}">
-                    <img style="height:35px; border-radius:50%; margin-bottom:5px;" src=${avatarLink} alt="" class="shadow">
-                    <span class="bg-${color} p-1 mb-2 rounded shadow text-light">
-                      ${message}
-                    </span>
-                  </p>`
+    <img style="height:35px; border-radius:50%; margin-bottom:5px;" src=${avatarLink} alt="" class="shadow">
+    <span class="bg-${color} p-1 mb-2 rounded shadow text-light">
+      ${message}
+    </span>
+  </p>`
   return text
 }
 // AJAX -- GET Messsages
 function refreshMessages() {
   const xhr = new XMLHttpRequest()
-  xhr.open("GET", "http://127.0.0.1:8000/message_lists/")
+  xhr.open("POST", "/message_lists/")
+  xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest")
+  xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+  xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'))
   xhr.responseType = "json"
   xhr.onload = function () {
     var messageArr = xhr.response
@@ -28,22 +46,29 @@ function refreshMessages() {
     var allMessages = ""
     var i
     for (i = 0; i < messageList.length; i++) {
-      if (messageList[i].sender == "admin") {
-        var text = chatMessage(
-          messageList[i].message,
+      if (messageList[i].admin_message !== null) {
+        var admin_text = chatMessage(
+          messageList[i].admin_message,
           "float-left",
           "primary",
           adminAvatar
         )
-      } else {
-        var text = chatMessage(
-          messageList[i].message,
+      }else{
+        var admin_text = ''
+      }
+      if (messageList[i].client_message !== null) {
+        console.log(messageList[i])
+        var client_text = chatMessage(
+          messageList[i].client_message,
           "float-right",
           "secondary",
           userAvatar
         )
+      }else{
+        var client_text = ""
       }
-      allMessages += text
+      allMessages += client_text
+      allMessages += admin_text
     }
     message_box.innerHTML = allMessages
   }
@@ -51,9 +76,10 @@ function refreshMessages() {
   scrolldown()
 }
 // JS
-var message_box = document.getElementById("message-box")
-var message_field = document.getElementById("sender_text")
-var message = message_field.value
+var message_field = document.getElementById("client_message")
+if (message_field === null) {
+  var message_field = document.getElementById("admin_message")
+}
 function send(e) {
   e.preventDefault()
   var formData = new FormData(e.target)
